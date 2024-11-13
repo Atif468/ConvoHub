@@ -5,7 +5,7 @@ function Chats({ username }) {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [users, setUsers] = useState([]);
-  const socket = useMemo(() => io("http://localhost:3000"), []);
+  const socket = useMemo(() => io("https://chat-app-backend-jtcp.onrender.com/"), []);
 
   useEffect(() => {
     // Join the chat with username
