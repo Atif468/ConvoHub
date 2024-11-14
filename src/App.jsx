@@ -1,5 +1,6 @@
+// App.jsx
 import { useState } from "react";
-import Chats from "./components/ChatPage.jsx";
+import Chats from "./components/ChatPage";
 
 function App() {
   const [username, setUsername] = useState("");
