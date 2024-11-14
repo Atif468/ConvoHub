@@ -9,7 +9,7 @@ function Chats({ username }) {
   const [typingUser, setTypingUser] = useState(null);
 
   const socket = useMemo(
-    () => io("http://localhost:8080/"),
+    () => io("https://chat-app-backend-jtcp.onrender.com/"),
     []
   );
 
