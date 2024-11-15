@@ -9,7 +9,7 @@ function Chats({ username }) {
   const [selectedUser, setSelectedUser] = useState(null);
   const [typingUser, setTypingUser] = useState(null);
 
-  const socket = useMemo(() => io("http://localhost:8080/"), []);
+  const socket = useMemo(() => io("https://chat-app-backend-jtcp.onrender.com"), []);
 
   useEffect(() => {
     socket.emit("join", username);
