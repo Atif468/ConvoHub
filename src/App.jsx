@@ -28,7 +28,7 @@ function App() {
           </button>
         </div>
       ) : (
-        <div className="w-screen">
+        <div>
           {!isJoined ? (
             <div className="bg-white text-black p-8 rounded-xl shadow-lg text-center animate-fadeIn">
               <h2 className="text-3xl font-bold mb-4">Join Chat</h2>
