@@ -8,8 +8,9 @@ function Chats({ username }) {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [typingUser, setTypingUser] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const socket = useMemo(() => io("https://chat-app-backend-jtcp.onrender.com"), []);
+  const socket = useMemo(() => io("http://localhost:8080/"), []);
 
   useEffect(() => {
     socket.emit("join", username);
@@ -58,18 +59,27 @@ function Chats({ username }) {
 
   return (
     <WavyBackground>
-      <div className="flex gap-2 p-6 animate-fadeIn h-screen w-screen z-50">
-        <div className="w-1/4 bg-transparent border text-white p-4 rounded z-50 shadow-lg overflow-y-auto">
-          <h3 className="font-semibold text-lg mb-2">Online Users</h3>
-          <hr />
+      <div className="flex h-screen w-screen relative overflow-hidden">
+        <div
+          className={`fixed lg:relative top-0 left-0 lg:flex lg:w-1/4 h-full lg:h-auto backdrop-blur-3xl bg-transparent p-4 shadow-2xl z-50 transition-transform transform ${
+            isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          } lg:translate-x-0 lg:static overflow-y-auto`}
+        >
+          <h3 className="font-semibold text-lg mb-2 flex justify-between items-center text-white">
+            Online Users
+          </h3>
+          <hr className="border-gray-400" />
           <ul className="list-disc list-inside space-y-1 text-white">
             {users.map((user) => (
               <li
                 key={user.id}
                 className={`cursor-pointer ${
-                  selectedUser?.id === user.id ? "font-bold" : ""
+                  selectedUser?.id === user.id ? "font-bold text-blue-700" : ""
                 }`}
-                onClick={() => setSelectedUser(user)}
+                onClick={() => {
+                  setSelectedUser(user);
+                  setIsSidebarOpen(false);
+                }}
               >
                 {user.name}
               </li>
@@ -77,15 +87,28 @@ function Chats({ username }) {
           </ul>
         </div>
 
-        <div className="flex-1 flex flex-col border p-6 rounded shadow-lg overflow-hidden">
-          <h3 className="text-xl font-semibold text-white mb-1">
-            {selectedUser
-              ? `Chat with ${selectedUser.name}`
-              : "Select a user to start chatting"}
-          </h3>
+        <div className="flex-1 flex flex-col border p-6 lg:ml-4 rounded shadow-lg overflow-hidden text-white relative">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-semibold">
+              {selectedUser
+                ? `Chat with ${selectedUser.name}`
+                : "Select a user to start chatting"}
+            </h3>
+            {typingUser && (
+              <div className="text-sm text-gray-400 mb-2">
+                {typingUser} is typing...
+              </div>
+            )}
+            <button
+              className="lg:hidden p-2 bg-green-500 rounded text-white"
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            >
+              {isSidebarOpen ? "Close" : "Users"}
+            </button>
+          </div>
           <hr />
 
-          <div className="flex-1 mb-4 p-4 rounded-lg space-y-3 z-50">
+          <div className="flex-1 mb-4 p-4 rounded-lg space-y-3 overflow-y-auto">
             {selectedUser &&
               (messages[selectedUser.name] || []).map((msg, index) => (
                 <pre
@@ -99,25 +122,25 @@ function Chats({ username }) {
               ))}
           </div>
 
-          {typingUser && (
-            <div className="text-sm text-gray-400 mb-2">
-              {typingUser} is typing...
-            </div>
-          )}
-
           {selectedUser && (
-            <form onSubmit={handleSendMessage} className="flex">
+            <form onSubmit={handleSendMessage} className="flex gap-1">
               <input
                 type="text"
                 placeholder="Type a message..."
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={handleTyping}
-                className="flex-1 p-4 text-white rounded-l-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="flex-1 p-4 bg-gradient-to-r from-gray-800 to-gray-700 text-white rounded-full 
+             focus:outline-none focus:ring-4 focus:ring-green-400 focus:border-transparent 
+             shadow-inner placeholder-gray-400 transition-all duration-200 ease-in-out"
+                style={{
+                  boxShadow: "inset 0 1px 4px rgba(0, 0, 0, 0.6)",
+                }}
               />
+
               <button
                 type="submit"
-                className="p-4 bg-green-500 text-white rounded-r-lg hover:bg-green-600 transition-colors shadow-lg"
+                className="p-4 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors shadow-lg"
               >
                 Send
               </button>
