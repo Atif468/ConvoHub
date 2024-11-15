@@ -10,7 +10,7 @@ function Chats({ username }) {
   const [typingUser, setTypingUser] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const socket = useMemo(() => io("https://chat-app-backend-jtcp.onrender.com"), []);
+  const socket = useMemo(() => io("http://localhost:8080/"), []);
 
   useEffect(() => {
     socket.emit("join", username);
@@ -59,10 +59,10 @@ function Chats({ username }) {
 
   return (
     <WavyBackground>
-      <div className="flex h-screen w-screen relative overflow-hidden">
+      <div className="flex h-screen w-screen overflow-hidden p-4">
          <div
-          className={`lg:w-1/4 w-2/3 sm:w-1/2 h-full fixed lg:relative top-0 left-0 lg:flex lg:flex-col backdrop-blur-3xl bg-transparent lg:bg-transparent p-4 shadow-2xl z-50 transition-transform transform ${
-            isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          className={`lg:w-1/4 w-2/3 sm:w-1/2 h-full fixed lg:relative top-0 left-0 lg:flex lg:flex-col rounded bg-transparent lg:bg-transparent p-4 shadow-2xl z-50 transition-transform transform ${
+            isSidebarOpen ? "translate-x-0 backdrop-blur-3xl" : "-translate-x-full border"
           } lg:translate-x-0 lg:static overflow-y-auto`}
         >
           <h3 className="font-semibold text-lg mb-2 text-white">Online Users</h3>
