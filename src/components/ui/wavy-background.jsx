@@ -96,7 +96,7 @@ const WavyBackground = ({
   return (
     <div
       className={cn(
-        "h-screen flex flex-col items-center justify-center",
+        "h-full flex flex-col items-center justify-center",
         containerClassName
       )}
     >
@@ -108,7 +108,7 @@ const WavyBackground = ({
           ...(isSafari ? { filter: `blur(${blur}px)` } : {}),
         }}
       ></canvas>
-      <div className={cn("relative z-10", className)} {...props}>
+      <div className={cn("relative z-50", className)} {...props}>
         {children}
       </div>
     </div>
