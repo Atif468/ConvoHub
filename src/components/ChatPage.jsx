@@ -52,18 +52,18 @@ function Chats({ username }) {
   const handleFileChange = (e) => {
     if (e.target.files.length > 0) {
       const selectedFile = e.target.files[0];
-  
+
       const reader = new FileReader();
       reader.onloadend = () => {
         setFile({
-          data: reader.result, // Base64 data
+          data: reader.result,
           name: selectedFile.name,
         });
       };
-      reader.readAsDataURL(selectedFile); // Read file as base64
+      reader.readAsDataURL(selectedFile);
     }
   };
-  
+
   const handleSendMessage = (e) => {
     e.preventDefault();
 
@@ -120,9 +120,6 @@ function Chats({ username }) {
     }
   };
 
-  
-  
-
   const handleTyping = () => {
     if (selectedUser) {
       socket.emit("typing", selectedUser.id);
@@ -137,16 +134,17 @@ function Chats({ username }) {
   };
 
   return (
-    <div className="flex h-screen w-screen p-2 overflow-x-hidden overflow-y-hidden">
+    <div className="flex h-screen w-screen overflow-x-hidden overflow-y-hidden p-2">
+      {/* Sidebar */}
       <div
-        className={`w-1/4 h-[98%] bg-gray-800 p-4 shadow-2xl z-50 transition-transform transform ${
+        className={`fixed lg:static w-1/4 lg:w-1/4 h-[98%] p-4 shadow-2xl z-50 transition-transform transform ${
           isSidebarOpen
-            ? "translate-x-0 backdrop-blur-3xl border-r-2"
-            : "-translate-x-full"
+            ? "translate-x-0 backdrop-blur-3xl"
+            : "-translate-x-full bg-gray-800"
         } lg:translate-x-0 lg:static`}
       >
         <h3 className="font-semibold text-lg mb-2 text-white">Online Users</h3>
-        <ul className="list-disc list-inside space-y-1 text-white">
+        <ul className="list-disc list-inside space-y-1 text-white backdrop-blur-0">
           {users.map((user) => (
             <li
               key={user.id}
@@ -155,7 +153,7 @@ function Chats({ username }) {
               }`}
               onClick={() => {
                 setSelectedUser(user);
-                setIsSidebarOpen(false);
+                setIsSidebarOpen(false); 
               }}
             >
               {user.name}
@@ -164,15 +162,23 @@ function Chats({ username }) {
         </ul>
       </div>
 
-      <div className="flex-1 flex flex-col p-4 lg:ml-4 rounded shadow-lg text-white relative">
+      {/* Chat Screen */}
+      <div className="flex-1 flex flex-col lg:ml-4 p-4 rounded shadow-lg text-white relative transition-all duration-300">
+        {/* Chat Header */}
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-semibold">
+          <h3
+            className={`text-xl font-semibold ${isSidebarOpen && "opacity-50"}`}
+          >
             {selectedUser
               ? `Chat with ${selectedUser.name}`
               : "Select a user to start chatting"}
           </h3>
           {typingUser && (
-            <div className="text-sm text-gray-400">
+            <div
+              className={`text-sm text-gray-400 ${
+                isSidebarOpen && "opacity-50"
+              }`}
+            >
               {typingUser} is typing...
             </div>
           )}
@@ -184,7 +190,12 @@ function Chats({ username }) {
           </button>
         </div>
 
-        <div className="sidebar flex-1 p-4 rounded-lg space-y-3 overflow-y-auto bg-gray-900">
+        {/* Chat Messages */}
+        <div
+          className={`sidebar flex-1 p-4 rounded-lg space-y-3 overflow-y-auto bg-gray-900 ${
+            isSidebarOpen && "opacity-50"
+          }`}
+        >
           {selectedUser &&
             (messages[selectedUser.name] || []).map((msg, index) => (
               <div key={index} className="p-2">
@@ -238,8 +249,12 @@ function Chats({ username }) {
           <div ref={chatEndRef} />
         </div>
 
+        {/* Message Input */}
         {selectedUser && (
-          <form onSubmit={handleSendMessage} className="flex gap-1 mt-4">
+          <form
+            onSubmit={handleSendMessage}
+            className={`flex gap-1 mt-4 ${isSidebarOpen && "opacity-50"}`}
+          >
             <select
               value={inputType}
               onChange={(e) => setInputType(e.target.value)}
