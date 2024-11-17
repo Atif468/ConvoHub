@@ -66,7 +66,7 @@ function Chats({ username }) {
   
   const handleSendMessage = (e) => {
     e.preventDefault();
-  
+
     if (inputType === "file" && file && selectedUser) {
       socket.emit("send-file", {
         to: selectedUser.id,
@@ -74,7 +74,7 @@ function Chats({ username }) {
         file: file.data,
         filename: file.name,
       });
-  
+
       setMessages((prevMessages) => ({
         ...prevMessages,
         [selectedUser.name]: [
@@ -84,7 +84,42 @@ function Chats({ username }) {
       }));
       setFile(null);
     }
+
+    if (inputType === "text" && message.trim() && selectedUser) {
+      socket.emit("privateMessage", {
+        to: selectedUser.id,
+        from: username,
+        text: message.trim(),
+      });
+
+      setMessages((prevMessages) => ({
+        ...prevMessages,
+        [selectedUser.name]: [
+          ...(prevMessages[selectedUser.name] || []),
+          { user: username, text: message.trim() },
+        ],
+      }));
+      setMessage("");
+    }
+
+    if (inputType === "code" && code.trim() && selectedUser) {
+      socket.emit("privateMessage", {
+        to: selectedUser.id,
+        from: username,
+        text: code.trim(),
+      });
+
+      setMessages((prevMessages) => ({
+        ...prevMessages,
+        [selectedUser.name]: [
+          ...(prevMessages[selectedUser.name] || []),
+          { user: username, text: code.trim() },
+        ],
+      }));
+      setCode("");
+    }
   };
+
   
   
 
