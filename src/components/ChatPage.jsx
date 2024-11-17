@@ -23,10 +23,13 @@ function Chats({ username }) {
       setUsers(userList.filter((user) => user.name !== username));
     });
 
-    socket.on("privateMessage", ({ from, text, file }) => {
+    socket.on("privateMessage", ({ from, text, file, fileName }) => {
       setMessages((prevMessages) => ({
         ...prevMessages,
-        [from]: [...(prevMessages[from] || []), { user: from, text, file }],
+        [from]: [
+          ...(prevMessages[from] || []),
+          { user: from, text, file, fileName },
+        ],
       }));
     });
 
@@ -46,44 +49,49 @@ function Chats({ username }) {
     }
   }, [messages, selectedUser]);
 
-  const handleSendMessage = (e) => {
-    e.preventDefault();
-    if (inputType === "text" && message && selectedUser) {
-      socket.emit("privateMessage", { text: message, to: selectedUser.id });
-      setMessages((prevMessages) => ({
-        ...prevMessages,
-        [selectedUser.name]: [
-          ...(prevMessages[selectedUser.name] || []),
-          { user: username, text: message },
-        ],
-      }));
-      setMessage("");
-    } else if (inputType === "file" && file && selectedUser) {
-      const formData = new FormData();
-      formData.append("file", file);
-      socket.emit("send-file", { to: selectedUser.id, file: formData });
-      setFile(null);
-    } else if (inputType === "code" && code && selectedUser) {
-      socket.emit("privateMessage", { text: code, to: selectedUser.id });
-      setMessages((prevMessages) => ({
-        ...prevMessages,
-        [selectedUser.name]: [
-          ...(prevMessages[selectedUser.name] || []),
-          { user: username, text: code },
-        ],
-      }));
-      setCode("");
+  const handleFileChange = (e) => {
+    if (e.target.files.length > 0) {
+      const selectedFile = e.target.files[0];
+  
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFile({
+          data: reader.result, // Base64 data
+          name: selectedFile.name,
+        });
+      };
+      reader.readAsDataURL(selectedFile); // Read file as base64
     }
   };
+  
+  const handleSendMessage = (e) => {
+    e.preventDefault();
+  
+    if (inputType === "file" && file && selectedUser) {
+      socket.emit("send-file", {
+        to: selectedUser.id,
+        from: username,
+        file: file.data,
+        filename: file.name,
+      });
+  
+      setMessages((prevMessages) => ({
+        ...prevMessages,
+        [selectedUser.name]: [
+          ...(prevMessages[selectedUser.name] || []),
+          { user: username, file: file.data, filename: file.name },
+        ],
+      }));
+      setFile(null);
+    }
+  };
+  
+  
 
   const handleTyping = () => {
     if (selectedUser) {
       socket.emit("typing", selectedUser.id);
     }
-  };
-
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
   };
 
   const handleCopyCode = (text) => {
@@ -141,7 +149,7 @@ function Chats({ username }) {
           </button>
         </div>
 
-        <div className="sidebar flex-1 p-4 rounded-lg space-y-3 overflow-y-auto bg-gray-900 ">
+        <div className="sidebar flex-1 p-4 rounded-lg space-y-3 overflow-y-auto bg-gray-900">
           {selectedUser &&
             (messages[selectedUser.name] || []).map((msg, index) => (
               <div key={index} className="p-2">
@@ -172,6 +180,24 @@ function Chats({ username }) {
                     </pre>
                   </div>
                 )}
+                {msg.file && (
+                  <div className="p-4 bg-gray-800 rounded-lg shadow-md mb-3">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-semibold text-gray-200">
+                        {msg.user}:
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <a
+                        href={msg.file}
+                        download
+                        className="text-blue-500 hover:underline"
+                      >
+                        Download {msg.fileName}
+                      </a>
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           <div ref={chatEndRef} />
@@ -192,11 +218,11 @@ function Chats({ username }) {
             {inputType === "text" && (
               <input
                 type="text"
-                placeholder="Type a message..."
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                onKeyDown={handleTyping}
-                className="flex-1 p-4 bg-gray-700 text-white rounded-full"
+                onKeyPress={handleTyping}
+                className="flex-1 p-2 rounded-md bg-gray-700 text-white"
+                placeholder="Type your message"
               />
             )}
 
@@ -204,22 +230,23 @@ function Chats({ username }) {
               <input
                 type="file"
                 onChange={handleFileChange}
-                className="flex-1 p-4 bg-gray-700 text-white rounded-full"
+                className="flex-1 p-2 rounded-md bg-gray-700 text-white"
               />
             )}
 
             {inputType === "code" && (
               <textarea
-                placeholder="Write your code here..."
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
-                className="flex-1 p-4 bg-gray-700 text-white rounded-md"
+                onKeyPress={handleTyping}
+                className="flex-1 p-2 rounded-md bg-gray-700 text-white"
+                placeholder="Write your code"
               />
             )}
 
             <button
               type="submit"
-              className="p-4 bg-green-500 text-white rounded-lg hover:bg-green-600"
+              className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
             >
               Send
             </button>
