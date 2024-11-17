@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import io from "socket.io-client";
 
 function Chats({ username }) {
@@ -8,12 +8,13 @@ function Chats({ username }) {
   const [selectedUser, setSelectedUser] = useState(null);
   const [typingUser, setTypingUser] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [inputType, setInputType] = useState("text"); // 'text', 'file', 'code'
+  const [inputType, setInputType] = useState("text");
   const [file, setFile] = useState(null);
   const [code, setCode] = useState("");
   const [isCopied, setIsCopied] = useState(false);
 
-  const socket = useMemo(() => io("https://chat-app-backend-jtcp.onrender.com"), []);
+  const socket = useMemo(() => io("http://localhost:8080/"), []);
+  const chatEndRef = useRef(null);
 
   useEffect(() => {
     socket.emit("join", username);
@@ -38,6 +39,12 @@ function Chats({ username }) {
       socket.disconnect();
     };
   }, [socket, username]);
+
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, selectedUser]);
 
   const handleSendMessage = (e) => {
     e.preventDefault();
@@ -88,7 +95,6 @@ function Chats({ username }) {
 
   return (
     <div className="flex h-screen w-screen p-2 overflow-x-hidden overflow-y-hidden">
-      {/* Sidebar */}
       <div
         className={`w-1/4 h-[98%] bg-gray-800 p-4 shadow-2xl z-50 transition-transform transform ${
           isSidebarOpen
@@ -115,7 +121,6 @@ function Chats({ username }) {
         </ul>
       </div>
 
-      {/* Chat Window */}
       <div className="flex-1 flex flex-col p-4 lg:ml-4 rounded shadow-lg text-white relative">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold">
@@ -136,49 +141,40 @@ function Chats({ username }) {
           </button>
         </div>
 
-        <div className="flex-1 p-4 rounded-lg space-y-3 overflow-y-auto bg-gray-900">
+        <div className="sidebar flex-1 p-4 rounded-lg space-y-3 overflow-y-auto bg-gray-900 ">
           {selectedUser &&
             (messages[selectedUser.name] || []).map((msg, index) => (
               <div key={index} className="p-2">
                 {msg.text && (
-                  <div>
-                    <div className="flex justify-between">
-                      <strong>{msg.user}:</strong>
-                      <button
+                  <div className="p-4 bg-gray-800 rounded-lg shadow-md mb-3">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-semibold text-gray-200">
+                        {msg.user}:
+                      </span>
+                      <div
                         onClick={() => handleCopyCode(msg.text)}
-                        className={`mt-2 px-4 py-2 m-1 rounded ${
+                        className={`flex items-center justify-center px-3 py-2 rounded-full cursor-pointer transition-all duration-300 ${
                           isCopied
-                            ? "bg-green-500"
-                            : "bg-gray-500 hover:bg-blue-600"
-                        } text-white transition-all`}
-                        title={isCopied ? "Copied!" : "Copy this code"}
+                            ? "bg-green-500 text-white"
+                            : "bg-gray-600 hover:bg-blue-500 text-gray-200"
+                        }`}
+                        title={isCopied ? "Code Copied!" : "Click to copy code"}
                       >
-                        {isCopied ? "Copied!" : "Copy Code"}
-                      </button>
+                        {isCopied ? "Copied" : "Copy"}
+                      </div>
                     </div>
                     <pre
-                      className={`p-3 rounded-md shadow ${
-                        msg.user === username ? "bg-blue-600" : "bg-gray-700"
-                      } text-white overflow-auto whitespace-pre-wrap`}
+                      className={`p-4 rounded-lg text-sm font-mono shadow-inner ${
+                        msg.user === username ? "bg-blue-700" : "bg-gray-700"
+                      } text-gray-100 overflow-auto whitespace-pre-wrap`}
                     >
                       <code>{msg.text}</code>
                     </pre>
                   </div>
                 )}
-                {msg.file && (
-                  <div
-                    className={`p-3 rounded-md shadow ${
-                      msg.user === username ? "bg-blue-600" : "bg-gray-600"
-                    }`}
-                  >
-                    <strong>{msg.user}:</strong>
-                    <a href={msg.file} className="text-blue-400" download>
-                      Click to download file
-                    </a>
-                  </div>
-                )}
               </div>
             ))}
+          <div ref={chatEndRef} />
         </div>
 
         {selectedUser && (
