@@ -20,7 +20,7 @@ function Chats() {
   const [isCopied, setIsCopied] = useState(false);
   const InputRef = useRef(null);
   const [openEmoji, setOpen] = useState(false);
-   const socket = useMemo(() => io("http://localhost:8080/"), []);
+   const socket = useMemo(() => io("https://convohub-backend.onrender.com/"), []);
 
   const chatEndRef = useRef(null);
   console.log(username);
