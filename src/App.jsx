@@ -1,7 +1,7 @@
 // App.jsx
 import { useState } from "react";
 import Chats from "./components/ChatPage";
-import Home from "./components/Home1";
+import Home from "./components/Home";
 import JoinUser from "./components/JoinUser";
 import { Routes, Route } from "react-router-dom";
 
