@@ -62,7 +62,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} /> 
         <Route path="/app/joinUser" element={<JoinUser />} />
-        <Route path="/app/chats" element={<Chats />} />
+        <Route path="/app/secureChats" element={<Chats />} />
       </Routes>
     </>
   );

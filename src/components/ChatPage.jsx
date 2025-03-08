@@ -1,3 +1,5 @@
+import { FaCheck } from "react-icons/fa6";
+import { IoCopyOutline } from "react-icons/io5";
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import io from "socket.io-client";
 import SideBar from "./SideBar";
@@ -199,7 +201,7 @@ function Chats() {
               : "Select a user to start chatting"}
           </h3>
           {typingUser && (
-            <div className="text-sm text-gray-400">
+            <div className="text-sm text-neutral-400">
               {typingUser} is typing...
             </div>
           )}
@@ -208,7 +210,7 @@ function Chats() {
         {/* Chat Messages */}
 
         <div
-          className="sidebar flex-1 p-4 rounded-lg space-y-3 overflow-y-auto bg-gray-900"
+          className="sidebar flex-1 p-4 rounded-lg space-y-3 overflow-y-auto bg-neutral-900"
         >
           {selectedUser &&
             (messages[selectedUser.name] || []).map((msg, index) => (
@@ -222,16 +224,16 @@ function Chats() {
                         className={`flex items-center justify-center px-3 py-2 rounded-full cursor-pointer transition-all duration-300 ${
                           isCopied
                             ? "bg-green-500 "
-                            : "bg-gray-600 hover:bg-blue-500 "
+                            : "bg-neutral-600 hover:bg-blue-500 "
                         }`}
                         title={isCopied ? "Code Copied!" : "Click to copy code"}
                       >
-                        {isCopied ? "Copied" : "Copy"}
+                        {isCopied ? <FaCheck /> : <IoCopyOutline />}
                       </div>
                     </div>
                     <pre
                       className={`p-4 rounded-lg text-sm font-mono shadow-inner ${
-                        msg.user === username ? "bg-green-500" : "bg-gray-700"
+                        msg.user === username ? "bg-green-500" : "bg-neutral-700"
                       } overflow-auto whitespace-pre-wrap`}
                     >
                       <code>{msg.text}</code>
@@ -239,7 +241,7 @@ function Chats() {
                   </div>
                 )}
                 {msg.file && (
-                  <div className="p-4 bg-gray-800 rounded-lg shadow-md mb-3">
+                  <div className="p-4 bg-neutral-800 rounded-lg shadow-md mb-3">
                     <div className="flex justify-between items-center mb-2">
                       <span className="font-semibold ">{msg.user}:</span>
                     </div>
@@ -287,7 +289,7 @@ function Chats() {
             <select
               value={inputType}
               onChange={(e) => setInputType(e.target.value)}
-              className="p-2 bg-gray-700 rounded-md"
+              className="p-2 bg-neutral-700 rounded-md"
             >
               <option value="text">Text</option>
               <option value="file">File</option>
@@ -301,7 +303,7 @@ function Chats() {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyPress={handleTyping}
-                className="flex-1 p-2 rounded-md bg-gray-700 "
+                className="flex-1 p-2 rounded-md bg-neutral-700 "
                 placeholder="Type your message"
               />
             )}
@@ -310,7 +312,7 @@ function Chats() {
               <input
                 type="file"
                 onChange={handleFileChange}
-                className="flex-1 p-2 rounded-md bg-gray-700 "
+                className="flex-1 p-2 rounded-md bg-neutral-700 "
               />
             )}
 
@@ -319,7 +321,7 @@ function Chats() {
                  value={code}
                 onChange={(e) => setCode(e.target.value)}
                 onKeyPress={handleTyping}
-                className="flex-1 p-2 rounded-md bg-gray-700 "
+                className="flex-1 p-2 rounded-md bg-neutral-700 "
                 placeholder="Write your code"
               />
             )}

@@ -1,0 +1,21 @@
+# Ignore node_modules and dependencies
+node_modules/
+venv/
+.env
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore log files and temp files
+*.log
+*.tmp
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore build and compiled files
+dist/
+build/

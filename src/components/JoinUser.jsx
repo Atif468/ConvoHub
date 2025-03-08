@@ -17,7 +17,7 @@ function JoinUser() {
       return;
     }
 
-    navigate("/app/chats", { state: { username } });
+    navigate("/app/secureChats", { state: { username } });
   };
 
   return (

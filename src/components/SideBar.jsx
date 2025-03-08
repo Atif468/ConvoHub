@@ -25,7 +25,7 @@ console.log(users);
 
       {/* Sidebar Panel */}
       <div
-        className={`fixed lg:static rounded-l-lg z-50 backdrop-blur-3xl lg:bg-gray-800 w-[60%] lg:w-1/4 h-[98%] p-4 shadow-2xl transition-transform transform ${
+        className={`fixed lg:static rounded-l-lg z-50 backdrop-blur-3xl lg:bg-neutral-800 w-[60%] lg:w-1/4 h-[98%] p-4 shadow-2xl transition-transform transform ${
           isSidebarOpen ? "translate-x-1" : "-translate-x-[110%] "
         } lg:translate-x-0`}
       >
